@@ -145,7 +145,7 @@ depends:
 	fi
 	@ echo "Done installing dependencies."
 
-install: depends
+install-without-depends:
 	@echo "######################################################################"
 	@echo "#                                                                    #"
 	@echo "# Installing DUE                                                     #"
@@ -166,6 +166,8 @@ install: depends
 
 	@ echo "Finally, add yourself to the user group with: sudo /usr/sbin/usermod -a -G docker $(shell whoami)"
 	@echo ""
+
+install: depends install-without-depends
 
 uninstall:
 	@echo "######################################################################"
