@@ -282,6 +282,7 @@ if [ "$SECURE_BOOT" != "" ];then
     make || exit 1
     echo "Installing *efi in /usr/local/bin"
     sudo make install || exit 1
+    rm -rf efitools-*
 fi
 
 echo "Done $0"

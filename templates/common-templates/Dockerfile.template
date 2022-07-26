@@ -53,5 +53,6 @@ COPY ./ /due-configuration/
 #  named <none> to be cleaned up later (see due --manage --delete-matched )
 
 RUN /due-configuration/pre-install-config.sh \
-    && mkdir /run/sshd \
-	&& /due-configuration/post-install-config.sh
+  && mkdir /run/sshd \
+  && /due-configuration/post-install-config.sh \
+  && rm -rf /due-configuration
