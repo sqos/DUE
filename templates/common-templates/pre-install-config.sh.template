@@ -65,7 +65,7 @@ if [ -e /etc/redhat-release ];then
     fi
 
 else
-
+    sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g;s/security.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
     apt-get update
     if [ $? != 0 ];then
         echo "$0 ERROR! Failed apt-get update. Exiting."
