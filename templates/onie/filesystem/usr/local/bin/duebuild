@@ -102,7 +102,7 @@ function fxnHelp()
     echo ""
     echo "  Build options:"
     echo "   -j|--jobs <#>               Number of parallel builds to use."
-    echo "   --build-attempts <times>    Try to build this many times. Default is [ $BUILD_ATTEMPTS ]"	
+    echo "   --build-attempts <times>    Try to build this many times. Default is [ $BUILD_ATTEMPTS ]"    
     echo "   --use-directory <dir>       cd to <dir> before trying to build."
     echo "   --prebuild-script <scr>     Run script at container path <scr> before starting build. Pass 'NONE' to ignore."
     echo "   --version                   Print version"
@@ -164,7 +164,7 @@ function fxnPrintConfig()
     echo "| Invoked with:      $INVOKED_WITH"
     if [ "$DO_DEFAULT" != "" ];then
         echo "| Building with default settings"
-    fi	
+    fi    
     echo "|"
     echo "| Build dir            [ $(pwd) ]"
     echo "| Build attempts       [ $BUILD_ATTEMPTS ]"
@@ -208,27 +208,27 @@ function fxnDoBuild()
     # Otherwise, check duebuild flags
     #
     if [ "$ADDITIONAL_BUILD_ARGS" = "" ];then
-	# Sanity check duebuild flags
-	# Vendor name isn't always needed for build
-	if [ "$3" != "" ];then
-	    case $3 in
-		kvm_x86_64 | qemu_arm* )
-		    echo "As [ $3 ] is an emulated build, not supplying MACHINEROOT"
-		    ;;
-		* )
-		    useVendorName=" MACHINEROOT=../machine/$3 "
-		    ;;
-	    esac
-	fi
+    # Sanity check duebuild flags
+    # Vendor name isn't always needed for build
+    if [ "$3" != "" ];then
+        case $3 in
+        kvm_x86_64 | qemu_arm* )
+            echo "As [ $3 ] is an emulated build, not supplying MACHINEROOT"
+            ;;
+        * )
+            useVendorName=" MACHINEROOT=../machine/$3 "
+            ;;
+        esac
+    fi
 
-	if [ "$buildTargets" = "" ];then
-	    fxnERR "Must supply --build-targets (all, recovery-iso, demo, etc...)"
-	    exit 1
-	fi
+    if [ "$buildTargets" = "" ];then
+        fxnERR "Must supply --build-targets (all, recovery-iso, demo, etc...)"
+        exit 1
+    fi
     fi
     
     if [[ $PATH != */usr/sbin* ]];then
-	PATH="/sbin:/usr/sbin:$PATH"
+    PATH="/sbin:/usr/sbin:$PATH"
     fi
 
     while [ $(( BUILD_ATTEMPTS > 0 )) = 1 ]; do
@@ -237,17 +237,17 @@ function fxnDoBuild()
         BUILD_ATTEMPTS=$(( BUILD_ATTEMPTS - 1 ))
         echo ""
 
-	if [ "$ADDITIONAL_BUILD_ARGS" != "" ];then
-	    # Passed straight in
-	    fxnPP "Using --cbuild make $ADDITIONAL_BUILD_ARGS"
-	    buildCommand="make $ADDITIONAL_BUILD_ARGS"
-	else
-	    # Compiled from duebuild args
-	    buildCommand="make -j$BUILD_JOBS $useVendorName  MACHINE=$machine $buildTargets "
-	fi
-	echo "Running $buildCommand"
-	bash -c "$buildCommand"
-	
+    if [ "$ADDITIONAL_BUILD_ARGS" != "" ];then
+        # Passed straight in
+        fxnPP "Using --cbuild make $ADDITIONAL_BUILD_ARGS"
+        buildCommand="make $ADDITIONAL_BUILD_ARGS"
+    else
+        # Compiled from duebuild args
+        buildCommand="make -j$BUILD_JOBS $useVendorName  MACHINE=$machine $buildTargets "
+    fi
+    echo "Running $buildCommand"
+    bash -c "$buildCommand"
+    
         result="$?"
 
         if [ "$result" != "0" ];then
@@ -326,56 +326,56 @@ do
             BUILD_DIR="$2"
             shift
             ;;
-		
-		# take --build as well. cbuild distinguishes it, though.
+        
+        # take --build as well. cbuild distinguishes it, though.
         -c | --cbuild | --build )
             # Default to build everything in container context.
-            # skip over --cbuild	
+            # skip over --cbuild    
             DO_BUILD="TRUE"
-	    if [ "$2" != "" ];then
-		shift
-		# The rest of the arguments passed should be given verbatim to
-		# whatever the build command is.
-		ADDITIONAL_BUILD_ARGS="$*"
-	    fi
-	    break
+            if [ "$2" != "" ];then
+            shift
+            # The rest of the arguments passed should be given verbatim to
+            # whatever the build command is.
+            ADDITIONAL_BUILD_ARGS="$*"
+            fi
+            break
             ;;
 
-	--default )
-	    DO_DEFAULT="TRUE"
-	    # --default is an exported hook that can be be called by DUE 
-	    # when this container is run. The intent is to do a very 
-	    # basic build operation to demonstrate functionality
-	    # and hopefully cover common cases.
-	    # For ONIE, this would be the kvm build
-	    VENDOR_NAME=""
-	    MACHINE="kvm_x86_64"
-	    BUILD_TARGETS=" all recovery-iso demo"
-#	    ADDITIONAL_BUILD_ARGS="make MACHINE=kvm_x86_64 all recovery-iso demo"
-	    DO_BUILD="TRUE"
-	    ;;
-	
-	--vendor )
-	    # Company that makes the hardware
-	    VENDOR_NAME="$2"
-	    shift
-	    ;;
+        --default )
+            DO_DEFAULT="TRUE"
+            # --default is an exported hook that can be be called by DUE 
+            # when this container is run. The intent is to do a very 
+            # basic build operation to demonstrate functionality
+            # and hopefully cover common cases.
+            # For ONIE, this would be the kvm build
+            VENDOR_NAME=""
+            MACHINE="kvm_x86_64"
+            BUILD_TARGETS=" all recovery-iso demo"
+            # ADDITIONAL_BUILD_ARGS="make MACHINE=kvm_x86_64 all recovery-iso demo"
+            DO_BUILD="TRUE"
+            ;;
+        
+        --vendor )
+            # Company that makes the hardware
+            VENDOR_NAME="$2"
+            shift
+            ;;
 
-	--machine )
-	    # The hardware
-	    DO_BUILD="TRUE"
-	    MACHINE="$2"
-	    shift
-	    ;;
+        --machine )
+            # The hardware
+            DO_BUILD="TRUE"
+            MACHINE="$2"
+            shift
+            ;;
 
-	--build-targets )	    
-	    # all, rescue-iso, etc
-	    # this must be the last argument
-	    shift
-	    BUILD_TARGETS="$*"
-	    break
-	    ;;
-	
+        --build-targets )        
+            # all, rescue-iso, etc
+            # this must be the last argument
+            shift
+            BUILD_TARGETS="$*"
+            break
+            ;;
+    
         -j* )
             # number of build job threads
             BUILD_JOBS="${term#-j}"
@@ -391,7 +391,7 @@ do
             shift
             ;;
 
-	
+    
         --prebuild-script )
             # Run this before starting package build. Probably contains commands
             # to generate ./debian/* files
@@ -401,7 +401,7 @@ do
                 shift
             fi
             ;;
-	
+    
         --build-attempts )
             # Sometimes the first try isn't the charm.
             BUILD_ATTEMPTS="$2"
@@ -464,14 +464,14 @@ if [ "$DO_BUILD" = "TRUE" ];then
     fi
 
     if [ "$VENDOR_NAME" = "all" ];then
-	DO_MULTIPLE_BUILDS="TRUE"
-	VENDOR_LIST="$( ls -1 ../machine )"
+    DO_MULTIPLE_BUILDS="TRUE"
+    VENDOR_LIST="$( ls -1 ../machine )"
     fi
 
 
     if [ "$MACHINE" = "all" ];then
-	# Any machine dir with an INSTALL file is a build target
-	TARGET_LIST=$( find ../machine/ -maxdepth 3 -iname INSTALL -type f | sed -e 's#/INSTALL##g' )
+    # Any machine dir with an INSTALL file is a build target
+    TARGET_LIST=$( find ../machine/ -maxdepth 3 -iname INSTALL -type f | sed -e 's#/INSTALL##g' )
     fi
 fi
 
@@ -506,49 +506,49 @@ fi
 if [ "$DO_BUILD" = "TRUE" ];then
 
     if [ "$MACHINE" = "all" ];then
-	echo "$TARGET_LIST"
-	for target in $TARGET_LIST ; do
-	    targetDir=$( dirname $target)
-	    vendor=${targetDir##../machine/}
-	    if [ "$vendor" = "../machine" ];then
-		# its a virtual machine. No vendor.
-		vendor=""
-	    fi
-	    machine=$( basename $target)
+    echo "$TARGET_LIST"
+    for target in $TARGET_LIST ; do
+        targetDir=$( dirname $target)
+        vendor=${targetDir##../machine/}
+        if [ "$vendor" = "../machine" ];then
+        # its a virtual machine. No vendor.
+        vendor=""
+        fi
+        machine=$( basename $target)
 
-	    echo "Building [ $vendor ] [ $machine ]"
-	    #invoked with $0 --machine all --build-targets all
-	    fxnDoBuild $machine "$BUILD_TARGETS" $vendor 2>&1 | tee -a  "build-log-${vendor}-${machine}"
-	    if [ $? -ne 0 ];then
-		# Log failed builds, but keep going. User can ls *FAILED to see what
-		# didn't work.
-		mv build-log-${vendor}-${machine} build-log-${vendor}-${machine}-FAILED
-		echo  "$0 failed to build [ $vendor ] [ $machine ] [ $BUILD_TARGETS ] "	>>  build-log-${vendor}-${machine} build-log-${vendor}-${machine}-FAILED
-	    fi
-	done
+        echo "Building [ $vendor ] [ $machine ]"
+        #invoked with $0 --machine all --build-targets all
+        fxnDoBuild $machine "$BUILD_TARGETS" $vendor 2>&1 | tee -a  "build-log-${vendor}-${machine}"
+        if [ $? -ne 0 ];then
+        # Log failed builds, but keep going. User can ls *FAILED to see what
+        # didn't work.
+        mv build-log-${vendor}-${machine} build-log-${vendor}-${machine}-FAILED
+        echo  "$0 failed to build [ $vendor ] [ $machine ] [ $BUILD_TARGETS ] " >>  build-log-${vendor}-${machine} build-log-${vendor}-${machine}-FAILED
+        fi
+    done
     else
-	BUILD_LOG_FILE="build-${MACHINE}.log"
-	
-	if [ "$ADDITIONAL_BUILD_ARGS" != "" ];then
-	    fxnDoBuild 2>&1 | tee -a "$BUILD_LOG_FILE"
-	else
-	    if [ "$MACHINE" = "" ];then
-		fxnERR "Must specify a machine type to build. Exiting."
-		exit 1
-	    fi
-	    # Machine names should be unique, so just pull the vendor path out.
-	    VENDOR_NAME=$( find ../machine/ -maxdepth 3 -iname $MACHINE -type d | awk -F "/" '{print$3}' )
+    BUILD_LOG_FILE="build-${MACHINE}.log"
+    
+    if [ "$ADDITIONAL_BUILD_ARGS" != "" ];then
+        fxnDoBuild 2>&1 | tee -a "$BUILD_LOG_FILE"
+    else
+        if [ "$MACHINE" = "" ];then
+        fxnERR "Must specify a machine type to build. Exiting."
+        exit 1
+        fi
+        # Machine names should be unique, so just pull the vendor path out.
+        VENDOR_NAME=$( find ../machine/ -maxdepth 3 -iname $MACHINE -type d | awk -F "/" '{print$3}' )
 
-	    #
-	    # actually do the build
-	    #
+        #
+        # actually do the build
+        #
 
-	    fxnPP "Building "
-	    fxnDoBuild $MACHINE "$BUILD_TARGETS" ${VENDOR_NAME} 2>&1 | tee -a  "$BUILD_LOG_FILE"
-	fi
-	# Preserve exit code through exit trap
-	RETURN_CODE=${PIPESTATUS[0]}
-	echo "Build exited at $(date) with return code [ $RETURN_CODE ]"
+        fxnPP "Building "
+        fxnDoBuild $MACHINE "$BUILD_TARGETS" ${VENDOR_NAME} 2>&1 | tee -a  "$BUILD_LOG_FILE"
+    fi
+    # Preserve exit code through exit trap
+    RETURN_CODE=${PIPESTATUS[0]}
+    echo "Build exited at $(date) with return code [ $RETURN_CODE ]"
     fi
     
     exit "$RETURN_CODE"
