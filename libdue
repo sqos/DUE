@@ -456,6 +456,9 @@ function fxnPreProcessPostInstallConfig()
         #
         # Any variable replacement via sed would happen here
         #
+        local netDev=`ip route show  | grep default | awk '{print $5}'`
+        local devIPv4=`ip addr show eth0 | grep "\<inet\>" | awk '{print $2}'`
+        sed -i 's/^DUE_DEP_PKGS_MIRROR_IP=$/DUE_DEP_PKGS_MIRROR_IP='"${devIPv4%/*}"'/g' "$destDir"/post-install-config.sh
     fi
 }
 

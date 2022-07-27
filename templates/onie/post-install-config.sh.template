@@ -249,10 +249,13 @@ fi
 # Note: this assumes a 64bit AMD64 container
 #
 
-DUE_DEP_PKGS_MIRROR="local-server/due_dep_pkgs"
+DUE_DEP_PKGS_MIRROR_IP=
+DUE_DEP_PKGS_MIRROR="${DUE_DEP_PKGS_MIRROR_IP}/due_dep_pkgs"
 HUB_VERSION="2.12.8"
 HUB_URL="https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-amd64-${HUB_VERSION}.tgz"
-HUB_URL="http://${DUE_DEP_PKGS_MIRROR}/hub-linux-amd64-${HUB_VERSION}.tgz" # use mirror url
+if [ -n "${DUE_DEP_PKGS_MIRROR_IP}" ]; then
+  HUB_URL="http://${DUE_DEP_PKGS_MIRROR}/hub-linux-amd64-${HUB_VERSION}.tgz" # use mirror url
+fi
 
 echo "Installing optional package 'hub' version $HUB_VERSION as a GitHub utility in /usr/local/bin."
 echo "curl --remote-name --remote-header-name --location $HUB_URL"
@@ -273,7 +276,9 @@ if [ "$SECURE_BOOT" != "" ];then
 
     EFI_TOOLS_VERSION="1.9.2"
     EFI_TOOLS_URL="https://git.kernel.org/pub/scm/linux/kernel/git/jejb/efitools.git/snapshot/efitools-${EFI_TOOLS_VERSION}.tar.gz"
-    EFI_TOOLS_URL="http://${DUE_DEP_PKGS_MIRROR}/efitools-${EFI_TOOLS_VERSION}.tar.gz" # use mirror url
+    if [ -n "${DUE_DEP_PKGS_MIRROR_IP}" ]; then
+      EFI_TOOLS_URL="http://${DUE_DEP_PKGS_MIRROR}/efitools-${EFI_TOOLS_VERSION}.tar.gz" # use mirror url
+    fi
     echo "Downloading efi tools."
     wget $EFI_TOOLS_URL || exit 1
     tar -xvf efitools-${EFI_TOOLS_VERSION}.tar.gz || exit 1
